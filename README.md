@@ -2,17 +2,7 @@
 
 Bull Dashboard is a UI built on top of [Bull](https://github.com/OptimalBits/bull) to help you visualize your queues and their jobs.
 
-<p align="center">
-  <a href="https://www.npmjs.com/package/bull-board">
-    <img alt="npm downloads" src="https://img.shields.io/npm/dw/bull-board">
-  </a>
-  <a href="https://github.com/vcapretz/bull-board/blob/master/LICENSE">
-    <img alt="licence" src="https://img.shields.io/github/license/vcapretz/bull-board">
-  </a>
-  <a href="https://snyk.io/test/github/vcapretz/bull-board">
-    <img alt="snyk" src="https://snyk.io/test/github/vcapretz/bull-board/badge.svg">
-  </a>
-<p>
+This fork supports prefix passing to support koa-router
 
 ![UI](https://raw.githubusercontent.com/vcapretz/bull-board/master/shot.png)
 
@@ -21,13 +11,13 @@ Bull Dashboard is a UI built on top of [Bull](https://github.com/OptimalBits/bul
 To add it to your project start by adding the library to your dependencies list:
 
 ```sh
-yarn add bull-board
+yarn add @winstrike/bull-board
 ```
 
 Or
 
 ```sh
-npm i bull-board
+npm i @winstrike/bull-board
 ```
 
 ## Hello World
@@ -96,7 +86,31 @@ And finally, add `UI` to your middlewares (this can be set up using an admin end
 const app = require('express')()
 const { UI } = require('bull-board')
 
-app.use('/admin/queues', UI)
+app.use('/admin/queues', UI())
+
+// other configurations for your server
+```
+
+Same thing for Koa:
+
+```js
+const Koa = require('koa');
+const Router = require('koa-router');
+
+const app = new Koa();
+const router = new Router();
+
+router.prefix('/monitor');
+router.all('*', async (ctx) => {
+  if (ctx.status == 404) {
+    delete ctx.res.statusCode;
+  }
+  ctx.respond = false;
+  const app = UI('/monitor');
+  app(ctx.req, ctx.res);
+});
+
+server.use(router.routes());
 
 // other configurations for your server
 ```
