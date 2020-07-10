@@ -62,7 +62,7 @@ const fields = {
   paused: ['id', 'timestamps', 'attempts', 'data', 'opts'],
   active: ['id', 'timestamps', 'progress', 'attempts', 'data', 'opts'],
   waiting: ['id', 'timestamps', 'data', 'opts'],
-  failed: ['id', 'failedReason', 'timestamps', 'progress', 'attempts', 'retry'],
+  failed: ['id', 'failedReason', 'data', 'timestamps', 'progress', 'attempts', 'retry'],
 }
 
 function PlusIcon({ width = 18 }) {
