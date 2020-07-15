@@ -16,6 +16,7 @@ export default function useStore(basePath) {
   })
 
   const poll = useRef()
+  const abortUpdateControllers = useRef([])
 
   useEffect(() => {
     stopPolling()
@@ -23,7 +24,12 @@ export default function useStore(basePath) {
     return stopPolling
   }, [selectedStatuses, pagination, pageSize])
 
+  const abortUpdates = () => {
+    abortUpdateControllers.current.forEach(abortController => abortController.abort())
+  }
+
   const stopPolling = () => {
+    abortUpdates()
     if (poll.current) {
       clearTimeout(poll.current)
       poll.current = null
@@ -35,7 +41,8 @@ export default function useStore(basePath) {
       .catch(error => {
         console.error('Failed to poll', error)
       })
-      .then(() => {
+      .then(data => {
+        if (data === 'abort') return
         const timeoutId = setTimeout(() => {
           runPolling()
         }, interval)
@@ -44,12 +51,21 @@ export default function useStore(basePath) {
   }
 
   const update = () => {
+    const abortController = new AbortController()
+    abortUpdateControllers.current.push(abortController)
     return fetch(`${basePath}/queues/?${qs.encode(Object.entries(selectedStatuses).length ? {
       ...selectedStatuses,
       ...pagination,
-    } : {})}`)
+    } : {})}`, { signal: abortController.signal })
       .then(res => (res.ok ? res.json() : Promise.reject(res)))
       .then(data => setState({ data, loading: false }))
+      .catch(e => {
+        if (e.name === 'AbortError') return 'abort'
+        throw e
+      })
+      .finally(() => {
+        abortUpdateControllers.current = abortUpdateControllers.current.filter(ac => ac !== abortController)
+      })
   }
 
   const retryJob = queueName => job => () =>
