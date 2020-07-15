@@ -206,7 +206,7 @@ const fieldComponents = {
   data: ({ job }) => {
     return (
       <Highlight className="json">
-        {JSON.stringify(job.data, null, 2)}
+        {JSON.stringify(hideSecretFields(job.data), null, 2)}
       </Highlight>
     )
   },
@@ -220,6 +220,18 @@ const fieldComponents = {
   retry: ({ job, retryJob }) => {
     return <button onClick={retryJob}>Retry</button>
   },
+}
+
+function hideSecretFields(object) {
+  return Object.keys(object).reduce(
+    (acc, key) => {
+      if (typeof object[key] === 'object')
+        return { ...acc, [key]: hideSecretFields(object[key]) }
+      if (key.includes('_secret')) return { ...acc, [key]: '***' }
+      return acc
+    },
+    { ...object },
+  )
 }
 
 function Jobs({ retryJob, queue: { jobs, name }, status }) {
