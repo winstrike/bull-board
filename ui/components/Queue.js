@@ -60,7 +60,7 @@ const fields = {
   completed: ['id', 'timestamps', 'progress', 'attempts', 'data', 'opts'],
   delayed: ['id', 'timestamps', 'attempts', 'delay', 'data', 'opts'],
   paused: ['id', 'timestamps', 'attempts', 'data', 'opts'],
-  active: ['id', 'timestamps', 'progress', 'attempts', 'data', 'opts'],
+  active: ['id', 'timestamps', 'progress', 'attempts', 'data', 'opts', 'remove'],
   waiting: ['id', 'timestamps', 'data', 'opts'],
   failed: ['id', 'failedReason', 'data', 'timestamps', 'progress', 'attempts', 'retry'],
 }
@@ -220,6 +220,9 @@ const fieldComponents = {
   retry: ({ job, retryJob }) => {
     return <button onClick={retryJob}>Retry</button>
   },
+  remove: ({ job, removeJob }) => {
+    return <button onClick={removeJob}>Remove</button>
+  },
 }
 
 function hideSecretFields(object) {
@@ -234,7 +237,7 @@ function hideSecretFields(object) {
   )
 }
 
-function Jobs({ retryJob, queue: { jobs, name }, status }) {
+function Jobs({ retryJob, removeJob, queue: { jobs, name }, status }) {
   if (!jobs.length) {
     return `No jobs with status ${status}`
   }
@@ -256,7 +259,7 @@ function Jobs({ retryJob, queue: { jobs, name }, status }) {
                 const Field = fieldComponents[field]
                 return (
                   <td key={`${name}-${job.id}-${field}`}>
-                    <Field job={job} retryJob={retryJob(job)} />
+                    <Field job={job} retryJob={retryJob(job)} removeJob={removeJob(job)} />
                   </td>
                 )
               })}
@@ -296,6 +299,7 @@ function QueueActions(props) {
 export default function Queue({
   retryAll,
   retryJob,
+  removeJob,
   cleanAllDelayed,
   cleanAllFailed,
   queue,
@@ -349,7 +353,7 @@ export default function Queue({
             />
           ) : null}
 
-          <Jobs retryJob={retryJob} queue={queue} status={selectedStatus} />
+          <Jobs retryJob={retryJob} removeJob={removeJob} queue={queue} status={selectedStatus} />
 
           {queue.jobs.length ? (
             <Paginator

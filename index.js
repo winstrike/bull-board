@@ -18,6 +18,7 @@ function UI(prefix) {
   router.get('/queues', require('./routes/queues'))
   router.put('/queues/:queueName/retry', require('./routes/retryAll'))
   router.put('/queues/:queueName/:id/retry', require('./routes/retryJob'))
+  router.put('/queues/:queueName/:id/remove', require('./routes/removeJob'))
   router.put('/queues/:queueName/clean/:queueStatus', require('./routes/cleanAll'))
   router.get('/', require('./routes/index'))
 

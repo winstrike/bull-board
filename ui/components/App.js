@@ -14,6 +14,7 @@ export default function App({ basePath }) {
     pageSize,
     setPageSize,
     retryJob,
+    removeJob,
     retryAll,
     cleanAllDelayed,
     cleanAllFailed
@@ -39,6 +40,7 @@ export default function App({ basePath }) {
                 pageSize={pageSize}
                 setPageSize={setPageSize}
                 retryJob={retryJob(queue.name)}
+                removeJob={removeJob(queue.name)}
                 retryAll={retryAll(queue.name)}
                 cleanAllDelayed={cleanAllDelayed(queue.name)}
                 cleanAllFailed={cleanAllFailed(queue.name)}

@@ -73,6 +73,11 @@ export default function useStore(basePath) {
       method: 'put',
     }).then(update)
 
+  const removeJob = queueName => job => () =>
+    fetch(`${basePath}/queues/${queueName}/${job.id}/remove`, {
+      method: 'put',
+    }).then(update)
+
   const retryAll = queueName => () =>
     fetch(`${basePath}/queues/${queueName}/retry`, { method: 'put' }).then(
       update,
@@ -91,6 +96,7 @@ export default function useStore(basePath) {
   return {
     state,
     retryJob,
+    removeJob,
     retryAll,
     cleanAllDelayed,
     cleanAllFailed,
