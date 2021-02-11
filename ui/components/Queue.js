@@ -140,15 +140,17 @@ const fieldComponents = {
   timestamps: ({ job }) => {
     return (
       <div className="timestamps">
-        <div>
-          <PlusIcon /> <TS ts={job.timestamp} />
-        </div>
-        {job.processedOn && (
+        {job.timestamp && (
+          <div>
+            <PlusIcon /> <TS ts={job.timestamp} />
+          </div>
+        )}
+        {(job.processedOn && job.timestamp) && (
           <div>
             <PlayIcon /> <TS ts={job.processedOn} prev={job.timestamp} />
           </div>
         )}
-        {job.finishedOn && (
+        {(job.finishedOn && job.processedOn) && (
           <div>
             <CheckIcon /> <TS ts={job.finishedOn} prev={job.processedOn} />
           </div>
@@ -193,7 +195,7 @@ const fieldComponents = {
     return job.attempts
   },
   delay: ({ job }) => {
-    return job.timestamp + job.delay - Date.now()
+    return (job.timestamp && job.delay) ? job.timestamp + job.delay - Date.now() : null
   },
   failedReason: ({ job }) => {
     return (
